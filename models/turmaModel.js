@@ -20,15 +20,15 @@ const Turma = sequelize.define(
       allowNull: false,
     },
     serie: {
-      type: DataTypes.STRING(10),
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     periodo: {
-      type: DataTypes.STRING(20),
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     dia_semana: {
-      type: DataTypes.STRING(20),
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     qtd_alunos: {

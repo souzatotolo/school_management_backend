@@ -30,3 +30,22 @@ exports.deleteSala = async (req, res) => {
     res.status(500).json({ error: 'Erro ao excluir sala' });
   }
 };
+
+exports.updateSala = async (req, res) => {
+  const { id } = req.params;
+  const { codigo, nome } = req.body;
+
+  try {
+    const sala = await Sala.findByPk(id);
+    if (!sala) {
+      return res.status(404).json({ error: 'Sala não encontrada' });
+    }
+
+    await sala.update({ codigo, nome });
+    res.json({ message: 'Sala atualizada com sucesso', sala });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: 'Erro ao atualizar sala', detalhes: error.message });
+  }
+};

@@ -23,16 +23,14 @@ exports.createAluno = async (req, res) => {
       turma_id,
     } = req.body;
 
-    const turma = await Turma.findByPk(turma_id);
-    if (!turma) {
-      return res.status(400).json({ error: 'Turma não encontrada' });
-    }
-
-    const totalAlunos = await Aluno.count({
-      where: { turma_id, exclusao: false },
+    const turma = await Turma.findByPk(turma_id, {
+      include: { model: Aluno },
     });
-    if (totalAlunos >= turma.qtd_alunos) {
-      return res.status(400).json({ error: 'Limite de alunos excedido' });
+
+    if (turma.alunos.length >= turma.qtd_alunos) {
+      return res
+        .status(400)
+        .json({ error: 'Limite de alunos atingido para essa turma.' });
     }
 
     const novoAluno = await Aluno.create({
@@ -60,5 +58,42 @@ exports.deleteAluno = async (req, res) => {
     res.json({ message: 'Aluno excluído com sucesso' });
   } catch (error) {
     res.status(500).json({ error: 'Erro ao excluir aluno' });
+  }
+};
+
+exports.updateAluno = async (req, res) => {
+  const { id } = req.params;
+  const {
+    codigo,
+    nome,
+    cpf,
+    data_nascimento,
+    email,
+    telefone,
+    endereco,
+    turma_id,
+  } = req.body;
+
+  try {
+    const aluno = await Aluno.findByPk(id);
+    if (!aluno) {
+      return res.status(404).json({ error: 'Aluno não encontrado' });
+    }
+
+    await aluno.update({
+      codigo,
+      nome,
+      cpf,
+      data_nascimento,
+      email,
+      telefone,
+      endereco,
+      turma_id,
+    });
+    res.json({ message: 'Aluno atualizado com sucesso', aluno });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: 'Erro ao atualizar aluno', detalhes: error.message });
   }
 };
